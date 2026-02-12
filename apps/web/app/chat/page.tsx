@@ -10,6 +10,16 @@ type ChatResponse = {
     latencyMs: number;
 };
 
+function getSessionId() {
+    const key = "chat_session_id";
+    let id = localStorage.getItem(key);
+    if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem(key, id);
+    }
+    return id;
+}
+
 export default function ChatPage() {
     const [input, setInput] = useState("");
     const [lines, setLines] = useState<string[]>([]);
@@ -24,7 +34,8 @@ export default function ChatPage() {
         setLoading(true);
 
         try {
-            const data = (await chat({ sessionId: "demo-session", message: msg })) as ChatResponse;
+            const sessionId = getSessionId();
+            const data = (await chat({ sessionId, message: msg })) as ChatResponse;
             setLines((p) => [...p, `Bot: ${data.answer} (${data.latencyMs}ms)`]);
         } catch (e: any) {
             setLines((p) => [...p, `Bot: Error — ${e?.message ?? "unknown"}`]);

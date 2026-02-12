@@ -11,6 +11,12 @@ load_dotenv()
 
 app = FastAPI(title="Chatbot API", version="0.1.0")
 
+# Very simple in-memory chat history:
+# { session_id: [ {"role": "user"/"assistant", "content": "..."} , ... ] }
+CHAT_HISTORY: dict[str, list[dict[str, str]]] = {}
+
+MAX_TURNS = 12  # keep last 12 messages total (6 user+assistant pairs)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # Next dev server
@@ -53,10 +59,12 @@ async def chat(req: ChatRequest):
     if not api_key:
         raise HTTPException(status_code=500, detail="OPENROUTER_API_KEY is not set")
 
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant in a sci-fi dashboard UI."},
-        {"role": "user", "content": msg},
-    ]
+    # Build prompt/message
+    system_prompt = "You are a helpful assistant in a sci-fi dashboard UI."
+    history = CHAT_HISTORY.get(req.sessionId, [])
+    messages = [{"role": "system", "content": system_prompt}]
+    messages.extend(history)
+    messages.append({"role": "user", "content": msg})
 
     async with httpx.AsyncClient(timeout=30) as client:
         r = await client.post(
@@ -80,6 +88,15 @@ async def chat(req: ChatRequest):
 
     data = r.json()
     answer = data["choices"][0]["message"]["content"]
+
+    # Update memory
+    new_history = history + [
+        {"role": "user", "content": msg},
+        {"role": "assistant", "content": answer},
+    ]
+
+    # Trim old history (keep only most recent MAX_TURNS messages)
+    CHAT_HISTORY[req.sessionId] = new_history[-MAX_TURNS:]
 
     return ChatResponse(
         messageId=str(uuid.uuid4()),
