@@ -1,11 +1,16 @@
 import time
 import uuid
+import json
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import httpx
 from dotenv import load_dotenv
+from db import init_pool, close_pool, get_pool
+from chunking import chunk_text
+from embeddings import embed_texts
+
 
 load_dotenv()
 
@@ -38,9 +43,33 @@ class ChatResponse(BaseModel):
     latencyMs: int
 
 
+class IngestRequest(BaseModel):
+    name: str
+    text: str
+    metadata: dict = {}
+
+
+@app.on_event("startup")
+async def _startup():
+    await init_pool()
+
+
+@app.on_event("shutdown")
+async def _shutdown():
+    await close_pool()
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/db-health")
+async def db_health():
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow("SELECT now() AS ts;")
+    return {"db": "ok", "time": row["ts"].isoformat()}
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -104,3 +133,38 @@ async def chat(req: ChatRequest):
         sources=[],
         latencyMs=int((time.time() - t0) * 1000),
     )
+
+
+@app.post("/ingest")
+async def ingest(req: IngestRequest):
+    chunks = chunk_text(req.text)
+    if not chunks:
+        raise HTTPException(status_code=400, detail="text is empty")
+
+    # 1) embed all chunks
+    vectors = await embed_texts(chunks)
+
+    pool = get_pool()
+    async with pool.acquire() as conn:
+        # 2) create a document row
+        doc_row = await conn.fetchrow(
+            "INSERT INTO documents (name) VALUES ($1) RETURNING id;",
+            req.name,
+        )
+        document_id = doc_row["id"]
+
+        # 3) insert chunks
+        for i, (content, emb) in enumerate(zip(chunks, vectors)):
+            await conn.execute(
+                """
+                INSERT INTO doc_chunks (document_id, chunk_index, content, metadata, embedding)
+                VALUES ($1, $2, $3, $4, $5)
+                """,
+                document_id,
+                i,
+                content,
+                json.dumps(req.metadata),
+                emb,
+            )
+
+    return {"status": "ok", "documentId": document_id, "chunksInserted": len(chunks)}
