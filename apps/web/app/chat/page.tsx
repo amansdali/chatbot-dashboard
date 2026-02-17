@@ -37,6 +37,14 @@ export default function ChatPage() {
             const sessionId = getSessionId();
             const data = (await chat({ sessionId, message: msg })) as ChatResponse;
             setLines((p) => [...p, `Bot: ${data.answer} (${data.latencyMs}ms)`]);
+
+            if (data.sources?.length) {
+                const src = data.sources
+                    .map((s: any) => `[chunk ${s.chunkId}]${s.metadata?.source ? `(${s.metadata.source})` : ""}`)
+                    .join("  ");
+                setLines((p) => [...p, `Sources: ${src}`]);
+            }
+
         } catch (e: any) {
             setLines((p) => [...p, `Bot: Error — ${e?.message ?? "unknown"}`]);
         } finally {
