@@ -23,7 +23,7 @@ function getSessionId() {
 export default function ChatPage() {
     const [input, setInput] = useState("");
     const [lines, setLines] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false)
 
     async function send() {
         const msg = input.trim();

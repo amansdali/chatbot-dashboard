@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from db import init_pool, close_pool, get_pool
 from chunking import chunk_text
 from embeddings import embed_texts
+from retrieval import retrieve_chunks
 
 
 load_dotenv()
@@ -79,6 +80,32 @@ async def chat(req: ChatRequest):
     if not msg:
         raise HTTPException(status_code=400, detail="message is required")
 
+    # Embed user query
+    q_emb = (await embed_texts([msg]))[0]
+
+    # Retrieve relevant chunks
+    hits = await retrieve_chunks(q_emb, k=4)
+    best_distance = float(hits[0]["distance"]) if hits else 999.0
+    USE_CONTEXT_THRESHOLD = 0.5  # tweak later
+    use_context = hits and best_distance < USE_CONTEXT_THRESHOLD
+
+    # Build context + sources
+    context_parts = []
+    sources = []
+
+    if use_context:
+        for r in hits:
+            context_parts.append(f"[chunk {r['id']}] {r['content']}")
+            sources.append({
+                "chunkId": r["id"],
+                "documentId": r["document_id"],
+                "chunkIndex": r["chunk_index"],
+                "metadata": r["metadata"],
+                "distance": float(r["distance"]),
+            })
+
+    context_text = "\n\n".join(context_parts)
+
     # answer
     api_key = os.getenv("OPENROUTER_API_KEY")
     model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
@@ -89,10 +116,27 @@ async def chat(req: ChatRequest):
         raise HTTPException(status_code=500, detail="OPENROUTER_API_KEY is not set")
 
     # Build prompt/message
-    system_prompt = "You are a helpful assistant in a sci-fi dashboard UI."
+    system_prompt = (
+        "You are a helpful assistant in a sci-fi dashboard UI.\n"
+        "If CONTEXT is provided, you must use it as context and you must cite chunks like [chunk 123].\n"
+        "If no relevant CONTEXT is provided, answer normally from general knowledge.\n"
+        "You have access to the conversation history provided in the messages list.\n"
+        "Use it to stay consistent and answer questions about what the user said earlier.\n"
+        "Never invent citations. Keep answers within 200 tokens."
+    )
+
     history = CHAT_HISTORY.get(req.sessionId, [])
+
     messages = [{"role": "system", "content": system_prompt}]
     messages.extend(history)
+
+    # Inject retrieved knowledge
+    if use_context:
+        messages.append({
+            "role": "system",
+            "content": f"CONTEXT:\n{context_text}"
+        })
+
     messages.append({"role": "user", "content": msg})
 
     async with httpx.AsyncClient(timeout=30) as client:
@@ -130,7 +174,7 @@ async def chat(req: ChatRequest):
     return ChatResponse(
         messageId=str(uuid.uuid4()),
         answer=answer,
-        sources=[],
+        sources=sources,
         latencyMs=int((time.time() - t0) * 1000),
     )
 
