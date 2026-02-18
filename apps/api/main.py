@@ -1,8 +1,6 @@
 import time
 import uuid
-import json
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import httpx
@@ -25,14 +23,6 @@ app = FastAPI(title="Chatbot API", version="0.1.0")
 CHAT_HISTORY: dict[str, list[dict[str, str]]] = {}
 
 MAX_TURNS = 12  # keep last 12 messages total (6 user+assistant pairs)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next dev server
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class ChatRequest(BaseModel):
