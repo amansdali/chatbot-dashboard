@@ -1,4 +1,5 @@
-# chatbot dashboard, check it out at https://chatbot-dashboard-8r9gf6zpg-amandas-projects-2ab777c7.vercel.app/portfolio
+# chatbot dashboard
+Portfolio website with chatbot integration at https://chatbot-dashboard-8r9gf6zpg-amandas-projects-2ab777c7.vercel.app/portfolio
 Exploring new technologies by implementing a chatbot dashboard featuring:
 - Python API backend using FastAPI for CRUD endpoints
 - Openrouter for LLM calls and embeddings
