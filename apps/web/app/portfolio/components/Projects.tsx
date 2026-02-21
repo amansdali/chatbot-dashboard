@@ -4,45 +4,59 @@ export default function Projects() {
     const projects = [
         {
             id: 'project1',
-            href: 'https://github.com/amansdali/amansdali.github.io',
+            href: 'https://github.com/amansdali/dashboard',
             image: '/images/websiteimg.png',
             title: 'Personal Website (WIP)',
-            description: 'A personal website built using html, css, and javascript.',
+            description: 'A personal website built using Next.js, featuring a portfolio page with an AI chatbot.',
+            tags: ['Next.js', 'TypeScript', 'React', 'FastAPI', 'Python', 'OpenRouter', 'PostgreSQL'],
         },
         {
             id: 'project2',
             href: 'https://github.com/amansdali/Munchables',
             image: '/images/muchablesimg.png',
             title: 'Munchables',
-            description: 'Social media app for foodies. Sign up, post recipes, join clubs, follow users, and scroll through a curated feed. Made with Java Swing in a team of 4 for a software development course.',
+            description: 'Social media app for foodies. Sign up, post recipes, join clubs, follow users, and scroll through a curated feed.',
+            tags: ['Java', 'Java Swing', 'Github', 'Clean Architechture', 'Team Project'],
         },
         {
             id: 'project3',
             href: 'https://github.com/amansdali/Steam-Game-Recommendation-Tool',
             image: '/images/steamimg.png',
             title: 'Steam Game Recommendation Tool',
-            description: 'Website that recommends games on Steam based on an algorithm using weighted graphs and trees. Frontend made using HTML/CSS and Streamlit, backend made using Python, in a team of 4 for a computer science course.',
+            description: 'Website that recommends games on Steam based on an algorithm using weighted graphs and trees.',
+            tags: ['Python', 'Streamlit', 'HTML/CSS', 'Steam API','Team Project', 'Data Structures'],
         },
         {
             id: 'project4',
             href: 'https://github.com/amansdali/Exploding-Kittens-Local-Online-Game',
             image: '/images/kittensimg.png',
             title: 'Exploding Kittens Local Online Game',
-            description: 'Multiplayer card game based on Exploding Kittens, made using Java. Features networking between four different devices and turn-based action between players. Made in a group of 2 for a high school computer science course.',
+            description: 'Multiplayer card game based on Exploding Kittens, made using Java. Features networking between four different devices.',
+            tags: ['Java', 'Networking', 'Local Server', 'Multiplayer', 'Team Project'],
         },
         {
             id: 'project5',
             href: 'https://github.com/amansdali/The-Haunted-Forest',
             image: '/images/forestimg.png',
             title: 'The Haunted Forest',
-            description: 'Platformer game made using Python for a high school project.',
+            description: 'Platformer game made using Java for a high school project.',
+            tags: ['Java', 'Game Dev', 'OOP', 'Solo Project'],
         },
         {
             id: 'project6',
             href: 'https://github.com/qutch/StoryOfMyLife',
             image: '/images/hackathonimg.png',
             title: 'Story Of My Life',
-            description: 'A 2D top-down immersive language-learning game created using Unity, made within 36 hours in a team of 4 for UofTHacks13. Features Gemini, OpenRouter, and Elevenlabs api integration enabling smart translations and interactive conversations with npcs through tts and stt functionality.',
+            description: 'A 2D top-down immersive language-learning game created using Unity, made within 36 hours for UofTHacks13.',
+            tags: ['C#', 'Gemini API', 'ElevenLabs', 'Hackathon', 'Unity', 'Team Project'],
+        },
+        {
+            id: 'project7',
+            href: 'https://github.com/emtato/girlmath',
+            image: '/images/girlmathimg.png',
+            title: 'Girl Math',
+            description: 'An AI-powered journaling and reflection app that helps girls build confidence in STEM, made for Ellehacks2026',
+            tags: ['Python', 'MongoDB', 'Gemini API', 'FastAPI', 'Hackathon', 'Team Project'],
         },
     ]
 
@@ -53,24 +67,33 @@ export default function Projects() {
             <p className="body">here are some recent projects I have worked on<br/></p>
             <div id="projects-container">
                 {projects.map((project) => (
-                    <a
-                        key={project.id}
-                        href={project.href}
-                        id={project.id}
-                        className="project"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Image
-                            src={project.image}
-                            alt={project.title}
-                            width={256}
-                            height={256}
-                            style={{ width: '100%', height: 'auto' }}
-                        />
-                        <p className="body-smaller-bold">{project.title}</p>
-                        <p className="body-smaller">{project.description}</p>
-                    </a>
+                    <div key={project.id} id={project.id} className="project">
+                        <a
+                            href={project.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="project-link"
+                        >
+                            <Image
+                                src={project.image}
+                                alt={project.title}
+                                width={256}
+                                height={256}
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                            <div className="project-content">
+                                <p className="body-smaller-bold">{project.title}</p>
+                                <p className="body-smaller">{project.description}</p>
+                                {project.tags && (
+                                    <div className="project-tags">
+                                        {project.tags.map((tag) => (
+                                            <span key={tag} className="project-tag">{tag}</span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </a>
+                    </div>
                 ))}
             </div>
             <div className="row-flex">

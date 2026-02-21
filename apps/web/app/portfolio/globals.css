@@ -474,19 +474,22 @@ body {
     background-color: var(--accent-colour);
     border: solid clamp(0.1875rem, 0.6vw, 0.5rem) transparent;
     z-index: 998;
-    transition: rotate 0.6s ease;
+    transition: rotate 0.6s ease, transform 0.6s ease;
 }
 
-.project:hover {
+.project:hover,
+.project:focus-within {
     border-color: var(--text-colour);
     z-index: 999;
+    transform: scale(1.4);
 }
 
 #project1 {
     rotate: 0deg;
 }
 
-#project1:hover {
+#project1:hover,
+#project1:focus-within {
     rotate: -15deg;
 }
 
@@ -494,7 +497,8 @@ body {
     rotate: 0deg;
 }
 
-#project2:hover {
+#project2:hover,
+#project2:focus-within {
     rotate: 20deg;
 }
 
@@ -502,7 +506,8 @@ body {
     rotate: 0deg;
 }
 
-#project3:hover {
+#project3:hover,
+#project3:focus-within {
     rotate: -20deg;
 }
 
@@ -510,7 +515,8 @@ body {
     rotate: 0deg;
 }
 
-#project4:hover {
+#project4:hover,
+#project4:focus-within {
     rotate: -15deg;
 }
 
@@ -518,7 +524,8 @@ body {
     rotate: 0deg;
 }
 
-#project5:hover {
+#project5:hover,
+#project5:focus-within {
     rotate: 20deg;
 }
 
@@ -526,8 +533,18 @@ body {
     rotate: 0deg;
 }
 
-#project6:hover {
+#project6:hover,
+#project6:focus-within {
     rotate: -15deg;
+}
+
+#project7 {
+    rotate: 0deg;
+}
+
+#project7:hover,
+#project7:focus-within {
+    rotate: 20deg;
 }
 
 #artwork-container {
@@ -545,6 +562,39 @@ body {
     height: auto;
     aspect-ratio: 1 / 1;
     scroll-snap-align: center;
+}
+.project-link {
+    display: block;
+    text-decoration: none;
+}
+
+.project-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.project-tag {
+    font-family: var(--font-inter), "Inter", sans-serif;
+    font-size: clamp(0.625rem, 0.7vw, 0.75rem);
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    background-color: var(--background-colour);
+    color: var(--accent-colour);
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.project:hover .project-tag {
+    background-color: var(--text-colour);
+    color: var(--background-colour);
 }
 
 /* CONTACT SECTION */
