@@ -264,7 +264,7 @@ body {
 }
 
 .navbar-username:hover::after {
-    content: ".github.io";
+    content: ".tech";
     color: var(--accent-colour);
 }
 
