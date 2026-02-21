@@ -1,5 +1,5 @@
 # chatbot dashboard
-Portfolio website with chatbot integration at https://chatbot-dashboard-eight-rho.vercel.app/portfolio?_vercel_share=ZsC6zpzsnvZxNNFiLxMbzuSKQIORdqCq
+Portfolio website with chatbot integration at https://www.amansda.tech/portfolio
 
 Exploring new technologies by implementing a chatbot dashboard featuring:
 - Python API backend using FastAPI
