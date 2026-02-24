@@ -7,7 +7,7 @@ export default function Navbar() {
         <div id="navigation-divider">
             <nav className="navbar row-flex">
                 <div className="nav-left">
-                    <a href="amansda.tech" aria-label="Navigate to home page (main website)">
+                    <a href="www.amansda.tech" aria-label="Navigate to home page (main website)">
                         <div className="homepage-link">
                             <svg className="quack" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -42,7 +42,7 @@ export default function Navbar() {
                                 />
                             </svg>
                             <h4 className="header-link">
-                                <span className="navbar-username">amansdali</span>
+                                <span className="navbar-username">amansda</span>
                             </h4>
                         </div>
                     </a>
