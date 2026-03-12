@@ -38,12 +38,14 @@ export default function ChatBox() {
             const data = (await chat({ sessionId, message: msg })) as ChatResponse
             setLines((p) => [...p, `QuackBot: ${data.answer}`])
 
+            /*
             if (data.sources?.length) {
                 const src = data.sources
                     .map((s: any) => `[chunk ${s.chunkId}]${s.metadata?.source ? ` (${s.metadata.source})` : ''}`)
                     .join('  ')
                 setLines((p) => [...p, `Sources: ${src}`])
             }
+             */
         } catch (e: any) {
             setLines((p) => [...p, `QuackBot: Error — ${e?.message ?? 'unknown'}`])
         } finally {

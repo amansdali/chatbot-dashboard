@@ -23,11 +23,8 @@ export const metadata: Metadata = {
     description: 'My portfolio website',
 }
 
-export default function PortfolioLayout({
-                                            children,
-                                        }: {
-    children: React.ReactNode
-}) {
+export default function PortfolioLayout({children,}: { children: React.ReactNode })
+{
     return (
         <div className={`${gamjaFlower.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
             {children}
